@@ -1,0 +1,5 @@
+grpc:
+  port: 5000
+
+logger:
+  level: debug # possible values: debug, error, warn, info
