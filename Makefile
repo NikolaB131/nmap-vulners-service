@@ -24,6 +24,9 @@ generate-proto:
 test:
 	go test ./tests/... -v
 
+lint:
+	gofmt -s -w .
+
 docker-mock-vuln-server:
 		docker rm -f -v $(MOCK_VULN_SERVER_NAME)
 		cd ./tests/mock-vuln-server && \
