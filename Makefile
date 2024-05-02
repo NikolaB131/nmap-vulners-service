@@ -41,4 +41,5 @@ docker-build:
 	docker build --tag $(SERVICE_NAME) .
 
 docker-run: docker-build
-	docker run -d --name $(SERVICE_NAME) $(SERVICE_NAME)
+	docker rm -f -v $(SERVICE_NAME)
+	docker run -d --name $(SERVICE_NAME) -p 5000:5000 $(SERVICE_NAME)
