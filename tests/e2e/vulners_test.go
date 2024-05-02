@@ -90,7 +90,7 @@ func (s *VulnersControllerSuite) TearDownSuite() {
 func (s *VulnersControllerSuite) TestCheckVuln_1() { // One target, one port
 	ctx := context.Background()
 	response, err := s.Client.CheckVuln(ctx, &nmap_vulners_service.CheckVulnRequest{
-		Targets:  []string{"127.0.0.1"},
+		Targets:  []string{"localhost"},
 		TcpPorts: []int32{11001},
 	})
 	s.Require().NoError(err)
@@ -109,7 +109,7 @@ func (s *VulnersControllerSuite) TestCheckVuln_1() { // One target, one port
 func (s *VulnersControllerSuite) TestCheckVuln_2() { // Multiple targets, one port
 	ctx := context.Background()
 	response, err := s.Client.CheckVuln(ctx, &nmap_vulners_service.CheckVulnRequest{
-		Targets:  []string{"127.0.0.1", "nikolab131.xyz"},
+		Targets:  []string{"localhost", "nikolab131.xyz"},
 		TcpPorts: []int32{11001},
 	})
 	s.Require().NoError(err)
@@ -132,7 +132,7 @@ func (s *VulnersControllerSuite) TestCheckVuln_2() { // Multiple targets, one po
 func (s *VulnersControllerSuite) TestCheckVuln_3() { // One target, multiple ports
 	ctx := context.Background()
 	response, err := s.Client.CheckVuln(ctx, &nmap_vulners_service.CheckVulnRequest{
-		Targets:  []string{"127.0.0.1"},
+		Targets:  []string{"localhost"},
 		TcpPorts: []int32{11001, 11002},
 	})
 	s.Require().NoError(err)
@@ -159,7 +159,7 @@ func (s *VulnersControllerSuite) TestCheckVuln_3() { // One target, multiple por
 func (s *VulnersControllerSuite) TestCheckVuln_4() { // Multiple targets, multiple ports
 	ctx := context.Background()
 	response, err := s.Client.CheckVuln(ctx, &nmap_vulners_service.CheckVulnRequest{
-		Targets:  []string{"127.0.0.1", "nikolab131.xyz"},
+		Targets:  []string{"localhost", "nikolab131.xyz"},
 		TcpPorts: []int32{11001, 11002, 22, 80, 443},
 	})
 	s.Require().NoError(err)
