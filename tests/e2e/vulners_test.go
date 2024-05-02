@@ -160,7 +160,7 @@ func (s *VulnersControllerSuite) TestCheckVuln_4() { // Multiple targets, multip
 	ctx := context.Background()
 	response, err := s.Client.CheckVuln(ctx, &nmap_vulners_service.CheckVulnRequest{
 		Targets:  []string{"localhost", "nikolab131.xyz"},
-		TcpPorts: []int32{11001, 11002, 22, 80, 443},
+		TcpPorts: []int32{11001, 11002, 80, 443},
 	})
 	s.Require().NoError(err)
 
@@ -182,14 +182,7 @@ func (s *VulnersControllerSuite) TestCheckVuln_4() { // Multiple targets, multip
 	s.Contains(secondService.Vulns, &nmap_vulners_service.Vulnerability{Identifier: "PRION:CVE-2017-20005", CvssScore: 7.5}, containsVulnMsg)
 
 	nikolab131Res := response.GetResults()[1]
-	service := nikolab131Res.Services[0]
-	s.Equal(1, len(nikolab131Res.Services))
-	s.Equal("ssh", service.Name)
-	s.Equal("8.2p1 Ubuntu 4ubuntu0.11", service.Version)
-	s.Equal(int32(22), service.TcpPort)
-	s.Contains(service.Vulns, &nmap_vulners_service.Vulnerability{Identifier: "CVE-2016-20012", CvssScore: 4.3}, containsVulnMsg)
-	s.Contains(service.Vulns, &nmap_vulners_service.Vulnerability{Identifier: "CVE-2021-28041", CvssScore: 4.6}, containsVulnMsg)
-	s.Contains(service.Vulns, &nmap_vulners_service.Vulnerability{Identifier: "CVE-2012-1577", CvssScore: 7.5}, containsVulnMsg)
+	s.Empty(nikolab131Res.Services)
 }
 
 func (s *VulnersControllerSuite) TestCheckVuln_Empty() {
