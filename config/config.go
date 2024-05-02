@@ -4,14 +4,16 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
 
 type (
 	Config struct {
-		GRPC   `yaml:"grpc"`
-		Logger `yaml:"logger"`
+		GRPC    `yaml:"grpc"`
+		Logger  `yaml:"logger"`
+		Vulners `yaml:"vulners"`
 	}
 
 	GRPC struct {
@@ -20,6 +22,10 @@ type (
 
 	Logger struct {
 		Level string `yaml:"level"`
+	}
+
+	Vulners struct {
+		CheckTimeout time.Duration `yaml:"check_timeout"`
 	}
 )
 
@@ -36,6 +42,9 @@ func NewConfig(path string) (*Config, error) {
 		},
 		Logger: Logger{
 			Level: "info",
+		},
+		Vulners: Vulners{
+			CheckTimeout: time.Minute,
 		},
 	}
 
@@ -57,6 +66,15 @@ func NewConfig(path string) (*Config, error) {
 	loggerLevel, ok := os.LookupEnv("LOGGER_LEVEL")
 	if ok {
 		config.Logger.Level = loggerLevel
+	}
+
+	vulnersCheckTimeout, ok := os.LookupEnv("VULNERS_CHECK_TIMEOUT")
+	if ok {
+		timeoutParsed, err := time.ParseDuration(vulnersCheckTimeout)
+		if err != nil {
+			return nil, fmt.Errorf("environment variable VULNERS_CHECK_TIMEOUT parsing error: %w", err)
+		}
+		config.Vulners.CheckTimeout = timeoutParsed
 	}
 
 	return &config, nil

@@ -13,31 +13,26 @@ import (
 	"google.golang.org/grpc"
 )
 
+type Flags struct {
+	ConfigPath       string
+	VulnerScriptPath string
+}
+
 func main() {
-	// Parse flags
-	var configPath string
-	flag.StringVar(&configPath, "c", "", "Path to yaml config file")
-	flag.StringVar(&configPath, "config", "", "Path to yaml config file (long version)")
-	flag.Parse()
-	if configPath == "" {
-		panic("Config file path is not specified")
-	}
+	flags := mustParseFlags()
 
 	// Config
-	config, err := config.NewConfig(configPath)
+	config, err := config.NewConfig(flags.ConfigPath)
 	if err != nil {
 		panic(err)
 	}
 
 	// Logger
 	logger := initLogger(config.Logger.Level)
-	logger.Info(
-		"Logger initialized",
-		slog.String("log_level", config.Logger.Level),
-	)
+	logger.Info("Logger initialized", slog.String("level", config.Logger.Level))
 
 	// Services
-	vulnersService := service.NewVulnersService(logger)
+	vulnersService := service.NewVulnersService(logger, config.Vulners.CheckTimeout, flags.VulnerScriptPath)
 
 	// Server
 	gRPCServer := grpc.NewServer()
@@ -48,16 +43,29 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	logger.Info(
-		"gRPC server started",
-		slog.Int("port", config.GRPC.Port),
-	)
+	logger.Info("gRPC server started", slog.Int("port", config.GRPC.Port))
 
 	err = gRPCServer.Serve(listener)
 	if err != nil {
 		panic(err)
 	}
+}
+
+func mustParseFlags() Flags {
+	var configPath string
+	flag.StringVar(&configPath, "c", "", "Path to yaml config file")
+	flag.StringVar(&configPath, "config", "", "Path to yaml config file (long version)")
+	vulnerScriptArg := "vscript"
+	vulnerScriptPath := flag.String(vulnerScriptArg, "", "Path to vulnerability check .nse script")
+	flag.Parse()
+	if configPath == "" {
+		panic("The --config argument is required")
+	}
+	if *vulnerScriptPath == "" {
+		panic(fmt.Sprintf("The --%s argument is required", vulnerScriptArg))
+	}
+
+	return Flags{ConfigPath: configPath, VulnerScriptPath: *vulnerScriptPath}
 }
 
 func initLogger(logLevel string) *slog.Logger {

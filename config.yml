@@ -3,3 +3,6 @@ grpc:
 
 logger:
   level: debug # possible values: debug, error, warn, info
+
+vulners:
+  check_timeout: 2m

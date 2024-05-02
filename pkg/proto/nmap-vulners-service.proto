@@ -7,7 +7,7 @@ service NetVulnService {
 
 message CheckVulnRequest {
   repeated string targets = 1; // IP addresses
-  repeated int32 tcp_port = 2; // only TCP ports
+  repeated int32 tcp_ports = 2; // only TCP ports
 }
 
 message CheckVulnResponse {
